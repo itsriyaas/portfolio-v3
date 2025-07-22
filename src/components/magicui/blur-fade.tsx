@@ -27,7 +27,10 @@ const BlurFade = ({
   blur = "6px",
 }: BlurFadeProps) => {
   const ref = useRef(null);
-  const isInView = !inView || useInView(ref, { once: true, margin: inViewMargin as any });
+
+  // ✅ Always call useInView
+  const inViewResult = useInView(ref, { once: true, margin: inViewMargin });
+  const shouldAnimate = inView ? inViewResult : true;
 
   const defaultVariants: Variants = {
     hidden: {
@@ -47,7 +50,7 @@ const BlurFade = ({
       <motion.div
         ref={ref}
         initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
+        animate={shouldAnimate ? "visible" : "hidden"}
         exit="hidden"
         variants={variant || defaultVariants}
         transition={{
