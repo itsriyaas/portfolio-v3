@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion, useInView, Variants } from "framer-motion";
+import { motion, useInView, Variants } from "framer-motion";
 import { useRef } from "react";
 
 interface BlurFadeProps {
@@ -11,7 +11,6 @@ interface BlurFadeProps {
   delay?: number;
   yOffset?: number;
   inView?: boolean;
-  inViewMargin?: string;
   blur?: string;
 }
 
@@ -23,14 +22,13 @@ const BlurFade = ({
   delay = 0,
   yOffset = 6,
   inView = false,
-  inViewMargin = "0px 0px -50px 0px",
   blur = "6px",
 }: BlurFadeProps) => {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
 
-  // ✅ Always call useInView
-  const inViewResult = useInView(ref, { once: true, margin: inViewMargin });
-  const shouldAnimate = inView ? inViewResult : true;
+  const isInView = useInView(ref, { once: true });
+
+  const shouldAnimate = inView ? isInView : true;
 
   const defaultVariants: Variants = {
     hidden: {
@@ -46,23 +44,20 @@ const BlurFade = ({
   };
 
   return (
-    <AnimatePresence>
-      <motion.div
-        ref={ref}
-        initial="hidden"
-        animate={shouldAnimate ? "visible" : "hidden"}
-        exit="hidden"
-        variants={variant || defaultVariants}
-        transition={{
-          delay,
-          duration,
-          ease: "easeOut",
-        }}
-        className={className}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={shouldAnimate ? "visible" : "hidden"}
+      variants={variant || defaultVariants}
+      transition={{
+        delay,
+        duration,
+        ease: "easeOut",
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
   );
 };
 
